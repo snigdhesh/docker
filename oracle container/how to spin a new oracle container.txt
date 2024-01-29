@@ -1,0 +1,52 @@
+Intro:
+Free database image from "container-registry.oracle.com"
+
+Note:
+In documentation it says podman, you can replace "docker" instead of "podman"
+
+How to get started:
+
+Use following command
+docker run -p 1521:1521 --name oracle-local container-registry.oracle.com/database/free:latest
+
+After few min, you should be able to connect from your sql-client with following details
+
+url: jdbc:oracle:thin:@localhost:1521:FREE
+username: SYS AS SYSDBA
+password:               //This password will be empty.
+
+If it says invalid credentails, try setting up a password using following command
+
+docker exec <container_id> ./setPassword.sh <new_password>
+
+Now, use your new password and connect with above details.
+
+Now run following command to create user (without any rules)
+change session to pdb: 
+	alter session set container=freepdb1;
+	
+	create user <user_name> identified by <password>; //user_name=test_admin and password=admin
+	
+	grant dba to test_admin;
+
+Now you should be able to create tables and all using following connection details;
+
+url: jdbc:oracle:thin:@localhost:1521/freepdb1
+username: test_admin
+password: admin
+
+
+commands:
+	docker --version //Displays docker version
+	docker images //Displays all images
+	docker container ls //Displays all containers (only active)
+	docker ps -a //Displays all containers (active and inactive)
+	
+	docker run -it -p 1521:1521 --name my-oracle-db container-registry.oracle.com/database/free
+		where 
+			-it //for interactive terminal, if at all you want to see what's inside container.
+			-p //Argument to route port from local machine to port on container.
+			1521:1521 //local machine port: container port
+			--name //Argument to give custom name to container
+			container-registry.oracle.com/database/free //Docker image name.
+	
